@@ -1,4 +1,6 @@
 package com.techelevator;
+import java.io.FileNotFoundException;
+
 /**************************************************************************************************************************
 *  This is your Vending Machine Command Line Interface (CLI) class
 *
@@ -23,11 +25,15 @@ public class VendingMachineCLI {
 													    MAIN_MENU_OPTION_PURCHASE,
 													    MAIN_MENU_OPTION_EXIT
 													    };
+	VendingMachine aVendingMachine;
+
 	
 	private Menu vendingMenu;              // Menu object to be used by an instance of this class
-	
-	public VendingMachineCLI(Menu menu) {  // Constructor - user will pas a menu for this class to use
+	private Item vendingItem;
+	public VendingMachineCLI(Menu menu) throws FileNotFoundException {  // Constructor - user will pas a menu for this class to use
 		this.vendingMenu = menu;           // Make the Menu the user object passed, our Menu
+		this.vendingItem = new Item();
+		this.aVendingMachine = new VendingMachine(vendingItem.readFile()); // Create a Vending Machine Object
 	}
 	/**************************************************************************************************************************
 	*  VendingMachineCLI main processing loop
@@ -40,11 +46,13 @@ public class VendingMachineCLI {
 	*  should be coded
 	*
 	*  Methods should be defined following run() method and invoked from it
+	 * @throws FileNotFoundException 
 	*
 	***************************************************************************************************************************/
 
-	public void run() {
-
+	public void run() throws FileNotFoundException {
+		
+	
 		boolean shouldProcess = true;         // Loop control variable
 		
 		while(shouldProcess) {                // Loop until user indicates they want to exit
@@ -72,7 +80,17 @@ public class VendingMachineCLI {
 /********************************************************************************************************
  * Methods used to perform processing
  ********************************************************************************************************/
-	public void displayItems() {      // static attribute used as method is not associated with specific object instance
+	public void displayItems() {      
+		for (int i =0; i < aVendingMachine.getList().size(); i++) {
+			
+		System.out.println(aVendingMachine.getList().get(i).getLocation() + "|" +
+				           aVendingMachine.getList().get(i).getName() + "|" +
+				           aVendingMachine.getList().get(i).getPrice() + "|" +
+				           aVendingMachine.getList().get(i).getType() + "|" );
+		}
+		
+		
+		// static attribute used as method is not associated with specific object instance
 		// Code to display items in Vending Machine
 	}
 	
