@@ -100,7 +100,7 @@ public class VendingMachineCLI {
 		//initialize finish transaction = false;
 		boolean finishTransaction = true;
 		//show menu with feed money, purchase, finish and current money provided
-		while (finishTransaction) { //WHILE finish transaction is FALSE keep running, when finish transaction is TRUE exit loop
+		while (finishTransaction) { //WHILE finish transaction is True keep running, when finish transaction is False exit loop
 		System.out.println("Current Money Provided: $" + aVendingMachine.getBalance());
 		System.out.println("(1) Feed Money");
 		System.out.println("(2) Select Product");		
@@ -122,7 +122,7 @@ public class VendingMachineCLI {
 			System.out.println("");
 			System.out.println("");
 			System.out.println("");
-			System.out.println("Enter Money: ");
+			System.out.print("Enter Money: $");
 			
 			userInput = new Scanner(System.in); //New scanner object
 			
@@ -136,16 +136,15 @@ public class VendingMachineCLI {
 				} else {
 					System.out.println("That is not a valid amount..."); //This is if user enters wrong value
 				}
-		}
+		}//END OF MENU CHOICE 1**
 		//*****************************************************************************************************
 				
 				
 		//***********THIS IS THE PURCHASE MENU*****************************************************************
 		else if(menuChoice.equals("2")) { //IF press 2 , display and prompt user to enter item code
 			this.displayItems();
-			System.out.println("Please enter an item: "); //prompt user for item
-			String itemChoice = userInput.next();		//Store itemChoice from user input
-			itemChoice.toUpperCase();					//change to upper
+			System.out.print("Please enter an item: "); //prompt user for item
+			String itemChoice = userInput.next().toUpperCase();		//Store itemChoice from user input
 			
 			if(itemChoice.equals("A1")  ||
 			   itemChoice.equals("A2")  ||
@@ -168,11 +167,19 @@ public class VendingMachineCLI {
 					
 					if(itemChoice.equals(aVendingMachine.getList().get(i).getLocation())) { //IF user item and loop matches then....
 						//System.out.println(aVendingMachine.getList().get(i).getLocation());
-						if(aVendingMachine.getList().get(i).getPrice() <= aVendingMachine.getBalance()) { //IF** balance is >= items price then...
-							System.out.println("HI");
+						if(aVendingMachine.getList().get(i).getPrice() <= aVendingMachine.getBalance()) { //IF** balance is <= items price then...
+							//Item price is subtracted from balance
+							aVendingMachine.setBalance(aVendingMachine.getBalance() - aVendingMachine.getList().get(i).getPrice()); 
+							//Inventory is subtracted*****
+							
+							//Item is dispensed with display message according to type // IF STATEMENT
+							
+						
 						}
-						//we want subtract from slow inventory
-						//we want to get the price from the object and subtract from the balance 
+						else {
+							System.out.println("Insufficient funds..."); //Display when user doesn't have enough money
+						}
+						
 						
 						
 						
@@ -185,45 +192,70 @@ public class VendingMachineCLI {
 				System.out.println("That is not a valid item!");
 				}
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-		}
+		} //END OF MENU CHOICE 2**
 					
 		//****************************************************************************************************
 				
+		else if (menuChoice.equals("3")) {
 			
+			//System.out.print("hello");
+			//THIS TURNS BALANCE TO CHANGE
+			//double change = 0;
 			
+			double change = aVendingMachine.getBalance();
 			
+			double quarters = 0;
+			double dimes = 0;
+			double nickels = 0;
+			while (change > 0) {	//while there's still change
+				if(change >= 25) {	//if the change is larger than a quarter
+					change -= 25;   // subtract a quarter
+					quarters++;		// Count the quarters taken away
+				} else if (change >= 10) {
+					change -= 10;
+					dimes++;		
+				} else if (change == 5) {
+					change -=5;
+					nickels++;
+				}
+				
+			}//end of while
+		
+			System.out.print("quarters: " + quarters + " | dimes: " + dimes + " | nickels: " + nickels);
 			
+			aVendingMachine.setBalance(0); //set balance to 0
 			
+			//finishTransaction = false;
 			
-			
-			
-			
-			
-			
-		}
 
+
+			
 		
 		
 		
-		//aVendingMachine.getList().get().getLocation(userinput); loop through until location equals
-		//update balance 
-		//update sales
-		//update inventory
-		// if user presses 3 then finish transaction == true;
+		}//END OF MENU CHOICE 3
+			
 		
-		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		}//END OF WHILE LOOP
+		
+		
+		
+		
+
+	
+		// if user presses 3 then finish transaction == false;
+		
+		}//END OF PURCHASE METHOD*********************************************************************************
 		
 		// static attribute used as method is not associated with specific object instance
 		// Code to purchase items from Vending Machine

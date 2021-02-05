@@ -9,6 +9,8 @@ public class VendingMachine {
 	private double balance;
 	
 	
+	
+	
 	//**************************************************************************************************
 	public ArrayList<Item> getList() {
 		return list;

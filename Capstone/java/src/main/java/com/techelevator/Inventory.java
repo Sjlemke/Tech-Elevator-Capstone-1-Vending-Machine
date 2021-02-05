@@ -7,8 +7,11 @@ import java.util.Scanner;
 
 public class Inventory {
 	
-	ArrayList<Slot> slots =  new ArrayList();	
+	//ArrayList<Slot> slots =  new ArrayList();	
 	
+	//Create a MAP where the key is 5 and item object
+	//for loop to cycle through theItems ArrayList and assign each of them to Key value of 5, key values will be subtracted per purchase
+	//Map<Item, Int> slots = new HashMap<Item, Int>(); ????????????????
 	
 	
 	
