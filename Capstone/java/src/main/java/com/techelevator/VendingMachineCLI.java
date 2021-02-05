@@ -172,10 +172,21 @@ public class VendingMachineCLI {
 							aVendingMachine.setBalance(aVendingMachine.getBalance() - aVendingMachine.getList().get(i).getPrice()); 
 							//Inventory is subtracted*****
 							
-							//Item is dispensed with display message according to type // IF STATEMENT
-							
+							if(aVendingMachine.getList().get(i).getType().equals("Chip")) {
+								System.out.println("Crunch Crunch, Yum!");
+								//Item is dispensed with display message according to type // IF STATEMENT
+							}
+							if(aVendingMachine.getList().get(i).getType().equals("Beverage")) {
+								System.out.println("Glug Glug, Yum!");
+							}
+							if(aVendingMachine.getList().get(i).getType().equals("Candy")) {
+								System.out.println("Munch Munch, Yum!");
+							}
+							if(aVendingMachine.getList().get(i).getType().equals("Gum")) {
+								System.out.println("Chew Chew, Yum!");
+							}
 						
-						}
+						}  //end of if balance is enough
 						else {
 							System.out.println("Insufficient funds..."); //Display when user doesn't have enough money
 						}

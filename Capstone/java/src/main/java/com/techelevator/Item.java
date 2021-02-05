@@ -12,12 +12,22 @@ public class Item {
 	private double price;
 	private String type;
 	
+	private int quantity = 5;
+
 	
 	
 	
-	
-	
-//***********************************************************************************************************************************************
+public int getQuantity() {
+		return quantity;
+	}
+
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+
+	//***********************************************************************************************************************************************
 	public String getLocation() {
 		return location;
 	}
