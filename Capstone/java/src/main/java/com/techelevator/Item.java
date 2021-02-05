@@ -69,12 +69,17 @@ public int getQuantity() {
 
 //*******************************************************************************************************************************************************
 
-	public Item() throws FileNotFoundException {
+	public Item(String location, String name, double price, String type) throws FileNotFoundException {
+		this.location = location;
+		this.name = name;
+		this.price = price;
+		this.type = type;
+		
 //		readFile();
 	}
 	
 	
-	
+	/*
 	public static ArrayList<Item> readFile() throws FileNotFoundException {
 	
 	ArrayList<Item> theItems = new ArrayList();
@@ -99,5 +104,5 @@ public int getQuantity() {
 	
 	
 	}
-	
+	*/
 }

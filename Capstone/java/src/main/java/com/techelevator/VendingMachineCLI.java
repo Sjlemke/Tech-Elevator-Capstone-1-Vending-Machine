@@ -1,5 +1,6 @@
 package com.techelevator;
 import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.Scanner;
 
 /**************************************************************************************************************************
@@ -27,14 +28,15 @@ public class VendingMachineCLI {
 													    MAIN_MENU_OPTION_EXIT
 													    };
 	VendingMachine aVendingMachine;
-
+	Inventory theInventory; //Create new inventory Object
 	
 	private Menu vendingMenu;              // Menu object to be used by an instance of this class
 	private Item vendingItem;
 	public VendingMachineCLI(Menu menu) throws FileNotFoundException {  // Constructor - user will pas a menu for this class to use
 		this.vendingMenu = menu;           // Make the Menu the user object passed, our Menu
-		this.vendingItem = new Item();	   // creating vending Item object
-		this.aVendingMachine = new VendingMachine(vendingItem.readFile()); // Create a Vending Machine Object that reads the item file
+	
+		//this.aVendingMachine = new VendingMachine(vendingItem.readFile()); // Create a Vending Machine Object that reads the item file
+		this.theInventory = new Inventory();
 	}
 	/**************************************************************************************************************************
 	*  VendingMachineCLI main processing loop
@@ -82,12 +84,12 @@ public class VendingMachineCLI {
  * Methods used to perform processing
  ********************************************************************************************************/
 	public void displayItems() {      
-		for (int i =0; i < aVendingMachine.getList().size(); i++) {
+		for (Map.Entry<String, Item> item : theInventory.getSlots().entrySet()) {
 			
-		System.out.println(aVendingMachine.getList().get(i).getLocation() + "|" +
-				           aVendingMachine.getList().get(i).getName() + "|" +
-				           aVendingMachine.getList().get(i).getPrice() + "|" +
-				           aVendingMachine.getList().get(i).getType() + "|" );
+		System.out.println(item.getValue().getLocation() + "|" +
+				           item.getValue().getName()     + "|" +
+				           item.getValue().getPrice()    + "|" +
+				           item.getValue().getType()     + "|" );
 		}
 		
 		
@@ -101,7 +103,7 @@ public class VendingMachineCLI {
 		boolean finishTransaction = true;
 		//show menu with feed money, purchase, finish and current money provided
 		while (finishTransaction) { //WHILE finish transaction is True keep running, when finish transaction is False exit loop
-		System.out.println("Current Money Provided: $" + aVendingMachine.getBalance());
+		System.out.println("Current Money Provided: $" + theInventory.getBalance());
 		System.out.println("(1) Feed Money");
 		System.out.println("(2) Select Product");		
 		System.out.println("(3) Finish Transaction");
@@ -114,7 +116,7 @@ public class VendingMachineCLI {
 		
 		 //**********THIS IS THE FEED MONEY MENU**************************************************************
 		if(menuChoice.equals("1")) {
-			System.out.println("Current Money Provided: $" + aVendingMachine.getBalance());
+			System.out.println("Current Money Provided: $" + theInventory.getBalance());
 			System.out.println("--------------------------------------------------------");
 			System.out.println("Please enter only $1, $5 and $10 bills... NO CHANGE");
 			System.out.println("");
@@ -132,7 +134,7 @@ public class VendingMachineCLI {
 					double totalBalance = 0;				     //declare a totalbalance variable
 					totalBalance = totalBalance + userDeposit;   //Sum up every dollar entered
 
-					aVendingMachine.setBalance(userDeposit);   //UPDATE the balance
+					theInventory.setBalance(userDeposit);   //UPDATE the balance
 				} else {
 					System.out.println("That is not a valid amount..."); //This is if user enters wrong value
 				}
@@ -146,6 +148,14 @@ public class VendingMachineCLI {
 			System.out.print("Please enter an item: "); //prompt user for item
 			String itemChoice = userInput.next().toUpperCase();		//Store itemChoice from user input
 			
+			
+			
+			theInventory.dispenseItem(itemChoice);
+			
+			
+			
+			
+		/*	
 			if(itemChoice.equals("A1")  ||
 			   itemChoice.equals("A2")  ||
 			   itemChoice.equals("A3")  ||
@@ -202,7 +212,7 @@ public class VendingMachineCLI {
 				} else {
 				System.out.println("That is not a valid item!");
 				}
-			
+			*/
 		} //END OF MENU CHOICE 2**
 					
 		//****************************************************************************************************
@@ -213,7 +223,7 @@ public class VendingMachineCLI {
 			//THIS TURNS BALANCE TO CHANGE
 			//double change = 0;
 			
-			double change = aVendingMachine.getBalance();
+			double change = theInventory.getBalance();
 			
 			double quarters = 0;
 			double dimes = 0;
@@ -234,7 +244,7 @@ public class VendingMachineCLI {
 		
 			System.out.print("quarters: " + quarters + " | dimes: " + dimes + " | nickels: " + nickels);
 			
-			aVendingMachine.setBalance(0); //set balance to 0
+			theInventory.setBalance(0); //set balance to 0
 			
 			//finishTransaction = false;
 			
