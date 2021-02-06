@@ -1,5 +1,7 @@
 package com.techelevator;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -38,6 +40,9 @@ public class VendingMachineCLI {
 		//this.aVendingMachine = new VendingMachine(vendingItem.readFile()); // Create a Vending Machine Object that reads the item file
 		this.theInventory = new Inventory();
 	}
+	
+	private DecimalFormat formatter = new DecimalFormat("0.00");
+
 	/**************************************************************************************************************************
 	*  VendingMachineCLI main processing loop
 	*  
@@ -49,11 +54,11 @@ public class VendingMachineCLI {
 	*  should be coded
 	*
 	*  Methods should be defined following run() method and invoked from it
-	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	*
 	***************************************************************************************************************************/
 
-	public void run() throws FileNotFoundException {
+	public void run() throws IOException {
 		
 	
 		boolean shouldProcess = true;         // Loop control variable
@@ -85,11 +90,14 @@ public class VendingMachineCLI {
  ********************************************************************************************************/
 	public void displayItems() {      
 		for (Map.Entry<String, Item> item : theInventory.getSlots().entrySet()) {
-			
+		
 		System.out.println(item.getValue().getLocation() + "|" +
 				           item.getValue().getName()     + "|" +
 				           item.getValue().getPrice()    + "|" +
-				           item.getValue().getType()     + "|" );
+				           item.getValue().getType()     + "|" +
+			"Quantity: " + item.getValue().getQuantity() + "|");
+		
+		
 		}
 		
 		
@@ -98,12 +106,12 @@ public class VendingMachineCLI {
 		
 	}
 	
-	public void purchaseItems() {	 
+	public void purchaseItems() throws IOException {	 
 		//initialize finish transaction = false;
 		boolean finishTransaction = true;
 		//show menu with feed money, purchase, finish and current money provided
 		while (finishTransaction) { //WHILE finish transaction is True keep running, when finish transaction is False exit loop
-		System.out.println("Current Money Provided: $" + theInventory.getBalance());
+		System.out.println("Current Money Provided: $" + formatter.format(theInventory.getBalance()));
 		System.out.println("(1) Feed Money");
 		System.out.println("(2) Select Product");		
 		System.out.println("(3) Finish Transaction");
@@ -116,7 +124,7 @@ public class VendingMachineCLI {
 		
 		 //**********THIS IS THE FEED MONEY MENU**************************************************************
 		if(menuChoice.equals("1")) {
-			System.out.println("Current Money Provided: $" + theInventory.getBalance());
+			System.out.println("Current Money Provided: $" + formatter.format(theInventory.getBalance()));
 			System.out.println("--------------------------------------------------------");
 			System.out.println("Please enter only $1, $5 and $10 bills... NO CHANGE");
 			System.out.println("");
@@ -153,107 +161,20 @@ public class VendingMachineCLI {
 			theInventory.dispenseItem(itemChoice);
 			
 			
-			
-			
-		/*	
-			if(itemChoice.equals("A1")  ||
-			   itemChoice.equals("A2")  ||
-			   itemChoice.equals("A3")  ||
-			   itemChoice.equals("A4")  || 
-			   itemChoice.equals("B1")  ||
-			   itemChoice.equals("B2")  ||
-			   itemChoice.equals("B3")  ||
-			   itemChoice.equals("B4")  ||
-			   itemChoice.equals("C1")  ||
-			   itemChoice.equals("C2")  ||
-			   itemChoice.equals("C3")  ||
-			   itemChoice.equals("C4")  ||
-			   itemChoice.equals("D1")  ||
-			   itemChoice.equals("D2")  ||
-			   itemChoice.equals("D3")  ||
-			   itemChoice.equals("D4")    ) {
-			//	aVendingMachine.getList().get(1).getLocation(itemChoice);
-				for (int i =0; i < aVendingMachine.getList().size(); i++) {	//Loop through the items list
-					
-					if(itemChoice.equals(aVendingMachine.getList().get(i).getLocation())) { //IF user item and loop matches then....
-						//System.out.println(aVendingMachine.getList().get(i).getLocation());
-						if(aVendingMachine.getList().get(i).getPrice() <= aVendingMachine.getBalance()) { //IF** balance is <= items price then...
-							//Item price is subtracted from balance
-							aVendingMachine.setBalance(aVendingMachine.getBalance() - aVendingMachine.getList().get(i).getPrice()); 
-							//Inventory is subtracted*****
-							
-							if(aVendingMachine.getList().get(i).getType().equals("Chip")) {
-								System.out.println("Crunch Crunch, Yum!");
-								//Item is dispensed with display message according to type // IF STATEMENT
-							}
-							if(aVendingMachine.getList().get(i).getType().equals("Beverage")) {
-								System.out.println("Glug Glug, Yum!");
-							}
-							if(aVendingMachine.getList().get(i).getType().equals("Candy")) {
-								System.out.println("Munch Munch, Yum!");
-							}
-							if(aVendingMachine.getList().get(i).getType().equals("Gum")) {
-								System.out.println("Chew Chew, Yum!");
-							}
-						
-						}  //end of if balance is enough
-						else {
-							System.out.println("Insufficient funds..."); //Display when user doesn't have enough money
-						}
-						
-						
-						
-						
-						
-						
-					}
-				}
-			
-				} else {
-				System.out.println("That is not a valid item!");
-				}
-			*/
 		} //END OF MENU CHOICE 2**
 					
 		//****************************************************************************************************
 				
 		else if (menuChoice.equals("3")) {
+			//We cant get here after buying an item HELP!!*****
 			
-			//System.out.print("hello");
-			//THIS TURNS BALANCE TO CHANGE
-			//double change = 0;
 			
-			double change = theInventory.getBalance();
 			
-			double quarters = 0;
-			double dimes = 0;
-			double nickels = 0;
-			while (change > 0) {	//while there's still change
-				if(change >= 25) {	//if the change is larger than a quarter
-					change -= 25;   // subtract a quarter
-					quarters++;		// Count the quarters taken away
-				} else if (change >= 10) {
-					change -= 10;
-					dimes++;		
-				} else if (change == 5) {
-					change -=5;
-					nickels++;
-				}
-				
-			}//end of while
+			theInventory.dispenseChange();
+		//	userInput.close();
+			finishTransaction = false;
 		
-			System.out.print("quarters: " + quarters + " | dimes: " + dimes + " | nickels: " + nickels);
-			
-			theInventory.setBalance(0); //set balance to 0
-			
-			//finishTransaction = false;
-			
 
-
-			
-		
-		
-		
 		}//END OF MENU CHOICE 3
 			
 		

@@ -5,8 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.io.IOException;
+
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
+
 
 public class Inventory {
 	
@@ -14,11 +27,13 @@ public class Inventory {
 	
 	
 	//ArrayList<Slot> slots =  new ArrayList();	
-	private Map<String, Item> slots = new HashMap<String, Item>(); //holds item and keeps track of current number of items per slot
+	private Map<String, Item> slots = new LinkedHashMap<String, Item>(); //holds item and keeps track of current number of items per slot
 	
 	private double balance = 0 ;
 	
-	
+	private DecimalFormat formatter = new DecimalFormat("#.00");
+
+	File audit = new File("log.txt"); // assigning the file
 	
 	
 	//Create a MAP where the key is 5 and item object
@@ -101,7 +116,8 @@ public class Inventory {
 		
 		String theLine = theFile.nextLine();       //Reading the line then storing each line in theLine
 		String[] theValues = theLine.split("\\|"); // Splitting the attribute up. For |, use \\
-		Item anItem = new Item( theValues[0],theValues[1],Double.parseDouble(theValues[2]),theValues[3]); //create new item object
+		
+		Item anItem = new Item( theValues[0],theValues[1],Double.parseDouble(theValues[2]),theValues[3], 5); //create new item object
 		//anItem.setLocation() = theValues[0];
 		//anItem.setName() = theValues[1];
 		//anItem.price = Double.parseDouble(theValues[2]);
@@ -125,38 +141,157 @@ public class Inventory {
 	}
 
 	
-	public String dispenseItem(String location) { 
-		/*
-		if     (location.equals("A1")  ||	//This is matching input with the values in map
-				location.equals("A2")  ||	//This method will get item from MAP and update the balance
-				location.equals("A3")  ||	//Will print out message according to type
-				location.equals("A4")  || 	//Subtracted from balance
-				location.equals("B1")  ||	//Only will subtract if balance is greater or equal to price
-				location.equals("B2")  ||
-				location.equals("B3")  ||
-				location.equals("B4")  ||
-				location.equals("C1")  ||
-				location.equals("C2")  ||
-				location.equals("C3")  ||
-				location.equals("C4")  ||
-				location.equals("D1")  ||
-				location.equals("D2")  ||
-				location.equals("D3")  ||
-				location.equals("D4")   ) {
-		*/
+	public void dispenseItem(String location) throws IOException { 
 		
-		Item anItem = slots.get(location);
+		
+		Item anItem = slots.get(location); // This gets the item based on the location
+									//If the item chosen, doesnt equal the location in inventory, then return
+		
+		//System.out.println(anItem.getQuantity() - 1);
+		if     (anItem.getLocation().equals("A1")  ||  //IF VALID ENTRY
+				anItem.getLocation().equals("A2")  ||
+				anItem.getLocation().equals("A3")  ||
+				anItem.getLocation().equals("A4")  || 
+				anItem.getLocation().equals("B1")  ||
+				anItem.getLocation().equals("B2")  ||
+				anItem.getLocation().equals("B3")  ||
+				anItem.getLocation().equals("B4")  ||
+				anItem.getLocation().equals("C1")  ||
+				anItem.getLocation().equals("C2")  ||
+				anItem.getLocation().equals("C3")  ||
+				anItem.getLocation().equals("C4")  ||
+				anItem.getLocation().equals("D1")  ||
+				anItem.getLocation().equals("D2")  ||
+				anItem.getLocation().equals("D3")  ||
+				anItem.getLocation().equals("D4")    ) {
+		//*******************************************************************************************************
+		// This adjusts the balance, inventory, and sales report
+		//*******************************************************************************************************
+			
+		
+			
+			if(anItem.getQuantity() > 0) {  //If the item is in stock
+
+			//PURCHASING
+			if(anItem.getPrice() <= balance) { // If the user has enough money to purchase the item, continue 
+			
+				
+				
+				anItem.setQuantity(anItem.getQuantity() - 1); //take one away from quantity
+				
+				logPurchase();
+				
+				balance -= anItem.getPrice(); // The item price is subtracted from the balance
+		
+			
+
+			//****************************************************************************************************
+			//This Displays the message based on Type of product
+			//****************************************************************************************************
+			String message = "";
+			if(anItem.getType().equals("Chip")) {
+				message = "Crunch Crunch, Yum!";
+			} else if(anItem.getType().equals("Drink")) {
+				message = "Glug Glug, Yum!";
+			} else if(anItem.getType().equals("Candy")) {
+				message = "Munch Munch, Yum!";
+			} else if(anItem.getType().equals("Gum")) {
+				message = "Chew Chew, Yum!";
+			}
+		
+			System.out.println(message);
+			//***************************************************************************************************
+		}else {
+			System.out.println("Insufficient funds..."); //Display when user doesn't have enough money
+		 }
+		
 		
 		//use quantity 
 		//if the item balance is ok
 		//if the item is not sold out
-		//if the item is certain type return the message
+		
+		
+		
+		
+	
+		
+		} else {//END OF IS ITEM IS IN STOCK
+		
+			System.out.println("SOLD OUT");
+			}
+		
+	
+			} else { //END OF IF PRODUCT CORRECT
+			System.out.println("That is not a valid item!");
+			}
+		
+		}// END OF DISPENSE METHOD
+	
+		
+	//***************************************************************************************************
+	//CREATE LOG FILE TO AUDIT
+	//***************************************************************************************************
+	
+	
+	public void logPurchase() throws IOException {
+	
+		
+	FileWriter aFileWriter = new FileWriter(audit, true);
+	BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
+	PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
+	Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
+	
+	diskFileWriter.println(timestampNow  );
+	
+	diskFileWriter.close();
+	
+	}
+	
+	//***************************************************************************************************
+	
+	
+	
+	public void dispenseChange() {
+		
+		double quarters = 0.0;
+		double dimes = 0.0;
+		double nickels = 0.0;
+		while (balance > 0.0) {	//while there's still change
+			if(balance >= 0.25) {	//if the change is larger than a quarter
+				balance -= 0.25;   // subtract a quarter
+				quarters++;		// Count the quarters taken away
+			} else if (balance >= 0.10) {
+				balance -= 0.10;
+				dimes++;		
+			} else if (balance >= 0.05) {
+				balance -= 0.05;
+				nickels++;
+			} else {
+				balance = 0;
+				break;
+			}
 			
-		return "hello";
-			
-			
-		}
-			
+		}//end of while
+		
+		
+		System.out.println("Here is your change! Thank you :) ");
+		System.out.println("quarters: " + quarters + " | dimes: " + dimes + " | nickels: " + nickels);
+		
+		balance = 0;
+		
+		
+		
+		
+		
+	}
+		
+	public void createSalesReport() throws IOException {
+		
+		Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
+		String thisFileName = "Todays_Report_" + timestampNow;
+		File report = new File(thisFileName);
+		report.createNewFile(); 
+	}
 			
 	
 		

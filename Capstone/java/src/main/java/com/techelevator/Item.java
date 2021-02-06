@@ -69,11 +69,12 @@ public int getQuantity() {
 
 //*******************************************************************************************************************************************************
 
-	public Item(String location, String name, double price, String type) throws FileNotFoundException {
+	public Item(String location, String name, double price, String type, int quantity) throws FileNotFoundException {
 		this.location = location;
 		this.name = name;
 		this.price = price;
 		this.type = type;
+		this.quantity = quantity;
 		
 //		readFile();
 	}
