@@ -241,7 +241,8 @@ public class Inventory {
 	PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
 	Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
 	
-	diskFileWriter.println(timestampNow  );
+	diskFileWriter.println(timestampNow + "balance" );
+		
 	
 	diskFileWriter.close();
 	
