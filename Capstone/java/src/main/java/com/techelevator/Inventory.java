@@ -31,9 +31,15 @@ public class Inventory {
 	
 	private double balance = 0 ;
 	
-	private DecimalFormat formatter = new DecimalFormat("#.00");
+	private DecimalFormat formatter = new DecimalFormat("0.00");
 
 	File audit = new File("log.txt"); // assigning the file
+	String currentItem = ""; //Used to keep a value for the log.txt
+	double currentPrice = 0; //USed to keep a value for the price for log.txt
+	String currentLocation = "";
+	double balanceLog = 0;
+	ArrayList<Item> theItems = new ArrayList();
+	double purchaseTotalSales = 0;
 	
 	
 	//Create a MAP where the key is 5 and item object
@@ -103,10 +109,10 @@ public class Inventory {
 		
 		
 	}
-	
+
 	public ArrayList<Item> readFile() throws FileNotFoundException {
 		
-	ArrayList<Item> theItems = new ArrayList();
+	
 		
 	File myInventory = new File("vendingmachine.csv"); //Read the text File with Items
 	
@@ -146,8 +152,13 @@ public class Inventory {
 		
 		Item anItem = slots.get(location); // This gets the item based on the location
 									//If the item chosen, doesnt equal the location in inventory, then return
+		currentItem = anItem.getName(); //Assigning this chosen item to the temporary variable
+		currentPrice = anItem.getPrice(); //Assigning this price to temp variable
+		currentLocation = anItem.getLocation();
+		balanceLog = balance - anItem.getPrice();
 		
 		//System.out.println(anItem.getQuantity() - 1);
+		
 		if     (anItem.getLocation().equals("A1")  ||  //IF VALID ENTRY
 				anItem.getLocation().equals("A2")  ||
 				anItem.getLocation().equals("A3")  ||
@@ -179,10 +190,10 @@ public class Inventory {
 				
 				anItem.setQuantity(anItem.getQuantity() - 1); //take one away from quantity
 				
-				//****logPurchase();
+				logPurchase();
 				
 				balance -= anItem.getPrice(); // The item price is subtracted from the balance
-		
+				purchaseTotalSales += anItem.getPrice(); //Adding total sales
 			
 
 			//****************************************************************************************************
@@ -203,26 +214,14 @@ public class Inventory {
 			//***************************************************************************************************
 		}else {
 			System.out.println("Insufficient funds..."); //Display when user doesn't have enough money
-		 }
+		 	}
 		
-		
-		//use quantity 
-		//if the item balance is ok
-		//if the item is not sold out
-		
-		
-		
-		
-	
-		
-		} else {//END OF IS ITEM IS IN STOCK
+			} else {//END OF IS ITEM IS IN STOCK
 		
 			System.out.println("SOLD OUT");
 			}
 		
 	
-			} else { //END OF IF PRODUCT CORRECT
-			System.out.println("That is not a valid item!");
 			}
 		
 		}// END OF DISPENSE METHOD
@@ -232,21 +231,51 @@ public class Inventory {
 	//CREATE LOG FILE TO AUDIT
 	//***************************************************************************************************
 	
+	public void createLog() throws IOException{
+	FileWriter aFileWriter = new FileWriter(audit, false);
+	}
+	
 	
 	public void logPurchase() throws IOException {
 	
-		
 	FileWriter aFileWriter = new FileWriter(audit, true);
 	BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
 	PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
 	Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
 	
-	diskFileWriter.println(timestampNow + "balance" );
+	diskFileWriter.println(timestampNow + " " + currentItem + " " + currentLocation + " " + "$" + formatter.format(balance) + " " + "$" + formatter.format(balanceLog)); 
 		
 	
 	diskFileWriter.close();
 	
 	}
+	
+	public void logDeposit(double deposit) throws IOException {
+		
+		FileWriter aFileWriter = new FileWriter(audit, true);
+		BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
+		PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
+		Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
+		
+		diskFileWriter.println(timestampNow + " FEED MONEY: $" + formatter.format(balance) + " $" + formatter.format(deposit)); 
+			
+		
+		diskFileWriter.close();
+		
+		}
+	public void logChange() throws IOException {
+		
+		FileWriter aFileWriter = new FileWriter(audit, true);
+		BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
+		PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
+		Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
+		
+		diskFileWriter.println(timestampNow + " GIVE CHANGE: $" + formatter.format(balance) + " $0.00"); 
+			
+		
+		diskFileWriter.close();
+		
+		}
 	
 	//***************************************************************************************************
 	
@@ -285,18 +314,43 @@ public class Inventory {
 		
 		
 	}
+	
+	public double returnTotal() {
 		
+		return purchaseTotalSales;
+	}
+		
+	
+	
 	public void createSalesReport() throws IOException {
 		
+		/*
 		Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
 		String thisFileName = "Todays_Report_" + timestampNow;
 		File report = new File(thisFileName);
 		report.createNewFile(); 
+		FileWriter aFileWriter = new FileWriter(report);
+		BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
+		PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
+		
+		
+		
+		
+		diskFileWriter.println(); 
+			
+		
+		diskFileWriter.close();
+			for (int i=0; i < theItems.size(); i++) {
+			System.out.println(theItems.)
+		}
+		*/
+	
+		
 	}
 			
 	
 		
-		
+	
 		
 		
 		

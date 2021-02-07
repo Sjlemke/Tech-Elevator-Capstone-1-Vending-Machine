@@ -1,9 +1,17 @@
 package com.techelevator;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Scanner;
+
+import java.sql.Timestamp;
 
 /**************************************************************************************************************************
 *  This is your Vending Machine Command Line Interface (CLI) class
@@ -25,9 +33,11 @@ public class VendingMachineCLI {
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "Display Vending Machine Items";
 	private static final String MAIN_MENU_OPTION_PURCHASE      = "Purchase";
 	private static final String MAIN_MENU_OPTION_EXIT          = "Exit";
+	private static final String MAIN_MENU_OPTION_REPORT	       = "Sales Report";
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_DISPLAY_ITEMS,
 													    MAIN_MENU_OPTION_PURCHASE,
-													    MAIN_MENU_OPTION_EXIT
+													    MAIN_MENU_OPTION_EXIT,
+											 		    MAIN_MENU_OPTION_REPORT
 													    };
 	VendingMachine aVendingMachine;
 	Inventory theInventory; //Create new inventory Object
@@ -42,6 +52,7 @@ public class VendingMachineCLI {
 	}
 	
 	private DecimalFormat formatter = new DecimalFormat("0.00");
+	private double totalBalance = 0;				     //declare a totalbalance variable
 
 	/**************************************************************************************************************************
 	*  VendingMachineCLI main processing loop
@@ -57,10 +68,11 @@ public class VendingMachineCLI {
 	 * @throws IOException 
 	*
 	***************************************************************************************************************************/
-
+	
 	public void run() throws IOException {
 		
-	
+		theInventory.createLog(); //create log to rewrite
+		
 		boolean shouldProcess = true;         // Loop control variable
 		
 		while(shouldProcess) {                // Loop until user indicates they want to exit
@@ -81,6 +93,10 @@ public class VendingMachineCLI {
 					endMethodProcessing();    // Invoke method to perform end of method processing
 					shouldProcess = false;    // Set variable to end loop
 					break;                    // Exit switch statement
+					
+				case MAIN_MENU_OPTION_REPORT:
+					salesReport();
+					break;
 			}	
 		}
 		return;                               // End method and return to caller
@@ -138,11 +154,13 @@ public class VendingMachineCLI {
 			
 			double userDeposit = userInput.nextDouble(); //This lets user deposit an amount
 				if(userDeposit == 1 || userDeposit == 5 || userDeposit == 10) { //Correct bill
-		
-					double totalBalance = 0;				     //declare a totalbalance variable
-					totalBalance = totalBalance + userDeposit;   //Sum up every dollar entered
-
-					theInventory.setBalance(userDeposit);   //UPDATE the balance
+					double depositForLog = userDeposit; //holding value for the log
+					
+					totalBalance = theInventory.getBalance() + userDeposit;   //Sum up every dollar entered
+					
+					theInventory.logDeposit(depositForLog); // This is logging the balance if fed monety
+					
+					theInventory.setBalance(totalBalance);   //UPDATE the balance
 				} else {
 					System.out.println("That is not a valid amount..."); //This is if user enters wrong value
 				}
@@ -158,20 +176,22 @@ public class VendingMachineCLI {
 			
 			
 			
-			theInventory.dispenseItem(itemChoice);
-			
+			try { theInventory.dispenseItem(itemChoice);
+			} catch (Exception e) {
+				System.out.println("That is not a valid item!");
+			}
 			
 		} //END OF MENU CHOICE 2**
 					
 		//****************************************************************************************************
 				
 		else if (menuChoice.equals("3")) {
-			//We cant get here after buying an item HELP!!*****
+			
 			
 			
 			
 			theInventory.dispenseChange();
-		//	userInput.close();
+		    theInventory.logChange();
 			finishTransaction = false;
 		
 
@@ -201,7 +221,32 @@ public class VendingMachineCLI {
 		
 		// static attribute used as method is not associated with specific object instance
 		// Code to purchase items from Vending Machine
+	public void salesReport() throws IOException {
+		Timestamp timestampNow = Timestamp.valueOf(LocalDateTime.now());  
+		String thisFileName = "Todays_Report_" + timestampNow.getSeconds() + "-" + timestampNow.getDay() + "-" + timestampNow.getYear();
+		File report = new File(thisFileName);
+		report.createNewFile(); 
+		FileWriter aFileWriter = new FileWriter(report);
+		BufferedWriter aBufferedWriter= new BufferedWriter(aFileWriter);
+		PrintWriter diskFileWriter = new PrintWriter(aBufferedWriter);
+		
 	
+		for (Map.Entry<String, Item> item : theInventory.getSlots().entrySet()) {
+			
+			
+			
+			
+			diskFileWriter.println(
+					           item.getValue().getName()     + "|" +
+					          
+							   item.getValue().getQuantity());
+			
+
+			}
+		diskFileWriter.println("");
+		diskFileWriter.println("Total Sales: $" + formatter.format(theInventory.returnTotal()));
+		diskFileWriter.close();
+	}
 	
 	public void endMethodProcessing() { // static attribute used as method is not associated with specific object instance
 		// Any processing that needs to be done before method ends
