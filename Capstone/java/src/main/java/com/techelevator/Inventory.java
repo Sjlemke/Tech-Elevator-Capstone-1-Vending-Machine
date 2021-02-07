@@ -179,7 +179,7 @@ public class Inventory {
 				
 				anItem.setQuantity(anItem.getQuantity() - 1); //take one away from quantity
 				
-				logPurchase();
+				//****logPurchase();
 				
 				balance -= anItem.getPrice(); // The item price is subtracted from the balance
 		
